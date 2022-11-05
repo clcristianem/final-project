@@ -2,8 +2,8 @@
 
 ## What idea(s) do you have for your final project?
 
-Tetris - Grid gets smaller every "x" amount of points
-Pong - Paddles get smaller for each side that loses, ball goes faster with each hit
+#Tetris - Grid gets smaller every "x" amount of points
+#Pong - Paddles get smaller for each side that loses, ball goes faster with each hit
 
 ## If you plan to collaborate with one or two classmates, what are their names?
 

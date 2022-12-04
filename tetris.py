@@ -277,4 +277,99 @@ def drawWindow(surface, grid, score=0):
 
 
 def main(win):
-   locked 
+   lockedPositions = {}
+   grid = createGrid(lockedPositions)
+   
+   changePiece = False
+   run = True
+   currentPiece = getShape()
+   nextPiece = getShape()
+   clock = pygame.time.clock()
+   fallTime = 0
+   fallSpeed = 0.27
+   levelTime = 0
+   score = 0
+                     
+   while run:
+      grid = create.grid(lockedPositions)
+      fallTime += clock.getRawtime()
+      levelTime += clock.getRawtime()
+      clock.tick()
+         
+      if levelTime/1000 > 5:
+         levelTime = 0
+         if levelTime > 0.12:
+            levelTime -= 0.005
+                     
+      if fallTime/1000 > fallSpeed:
+         fallTime = 0
+         currentPiece.y += 1
+         if not (validSpace(currentPiece, grid)) and currentPiece.y > 0:
+            currentPiece.y -= 1
+            changePiece = True
+                     
+         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+               run = False
+               pygame.display.quit()
+                     
+            if event.type == pygame.KEYDOWN:
+               if event.key == pygame.K_LEFT:
+                  currentPiece.x -= 1
+                     if not (validSpace(currentPiece, grid)):
+                        currentPiece.x -= 1
+               if event.key == pygame.K_RIGHT:
+                     currentPiece.x += 1
+                     if not (validSpace(currentPiece, grid)):
+                        currentPiece.x -= 1
+               if event.key == pygame.K_DOWN:
+                     currentPiece.y += 1
+                     if not (validSpace(currentPiece, grid)):
+                        currentPiece.y -= 1
+               if event.key == K_UP:
+                     currentPiece.rotation += 1
+                     if not (validSpace(currentPiece, grid)):
+                        currentPiece.rotation -= 1
+                     
+         shapePos = convertShapeFormat(currentPiece)
+                     
+         for i in range(len(shapePos)):
+            x, y = shapePos[i]
+            if y > -1:
+                  grid[y][x] = currentPiece.color
+                     
+         if changePiece:
+            for pos in shapePos:
+               p = (pos[0], pos[1])
+               lockPosition[p] = currentPiece.color
+            currentPiece = nextPiece
+            nextPiece = getShape()
+            changePiece = False
+            score += clearRows(grid, lockedPositions) * 10
+                     
+         drawWindow(win, grid, score)
+         drawNextShape(nextPiece, win)
+         pygame.display.update()
+                 
+         if checkLost(lockedPositions):
+            drawTextMiddle(win, "You lost...", 80, (255, 255, 255))
+            pygame.display.update()
+            pygame.time.delay(1500)
+            run = False
+                     
+def main_menu(win):
+      run = True
+      while run:
+            win.fill((0, 0, 0))
+            drawTextMiddle(win, 'Press a key to play Tricky Tetris!', 60, (255, 255, 255)
+            pygame.display.update()
+            for event in pygame.event.get():
+                  if event.type == pygame.QUIT:
+                        run = False
+                  if event.type == pygame.KEYDOWN:
+                        main(win)
+      pygame.display.quit()
+   
+win = pygame.display.setMode((screenWidth, screenHeight))
+pygame.display.setCaption('Tetris')
+main_menu(win)

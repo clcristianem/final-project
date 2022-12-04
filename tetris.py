@@ -3,11 +3,14 @@ import random
 
 
 #Game info
-#Creates arcade look: Main screen is bigger than play screen
-screen_width = 1000
-screen_height = 900
-play_width = 400
-play_height = 800
+#Creates arcade look: Main is bigger than play screen
+screenWidth = 1000
+screenHeight = 900
+playWidth = 400
+playHeight = 800
+blockSize = 30
+topLeftX = (screenWidth = playWidth) // 2
+topLeftY = screenHeight - playHeight
 
 #Start with normal tetris blocks, then create new blocks
 #New block ideas - "H" block, extended "O" block, "U" block, create more ideas later
@@ -18,34 +21,12 @@ play_height = 800
 SI = [['.....',
       '..0..',
       '..0..',
-      '.....',
-      '.....'],
-      ['.....',
-      '.....',
-      '..00.',
-      '.....',
-      '.....']]
-
-#J BLOCK
-J = [['.....',
-      '.0...',
-      '.000.',
-      '.....',
-      '.....'],
-      ['.....',
-      '..00.',
-      '..0..',
       '..0..',
       '.....'],
       ['.....',
       '.....',
       '.000.',
-      '...0.',
-      '.....'],
-      ['.....',
-      '..0..',
-      '..0..',
-      '.00..',
+      '.....',
       '.....']]
 
 #U BLOCK
@@ -71,27 +52,17 @@ U = [['.....',
       '.00..']]
 
       
-#L BLOCK
-L = [['.....',
-      '...0.',
-      '.000.',
-      '.....',
-      '.....'],
+#EXT-O BLOCK
+EO = [['.....',
+       '.00..',
+       '.00..',
+       '.00..',
+       '.....'],
       ['.....',
-      '..0..',
-      '..0..',
-      '..00.',
-      '.....'],
-      ['.....',
-      '......',
-      '.000.',
-      '.0...',
-      '.....'],
-      ['.....',
-      '.00..',
-      '..0..',
-      '..0..',
-      '.....']]
+       '.....',
+       '.000.',
+       '.000.',
+       '.....']]
 
 #SHORT-L BLOCK
 SL = [['.....',
@@ -137,16 +108,53 @@ T = [['.....',
       '..0..',
       '.....']]
 
-#LOWER-T BLOCK
-LT = [['.....',
+#S BLOCK
+S = [['...0.',
+      '..00.',
       '..0..',
+      '..0..',
+      '.....'],
+     ['.....',
+      '.....',
+      '...00',
       '.000.',
+      '.....'],
+     ['.0...',
+      '.0...',
+      '.00..',
       '..0..',
+      '.....'],
+     ['.....',
+      '.....',
+      '..000',
+      '.00..',
+      '.....']]
+
+#Z-BLOCK
+Z = [['.....',
+      '.0...',
+      '.00..',
+      '..0..',
+      '..0..'],
+     ['.....',
+      '.....',
+      '..000',
+      '.00..',
+      '.....'],
+     ['.....',
+      '...0.',
+      '...0.',
+      '..00.',
+      '..0..'],
+     ['.....',
+      '.....',
+      '.00..',
+      '..000',
       '.....']]
 
 
 #SHAPE INFO
-shapes = [LT, I, SL, U, T, L]
+shapes = [SI, S, SL, U, T, EO, Z]
 shapeColors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0), (0, 0, 255), (128, 0, 128)]
 
 class Piece(object):
@@ -157,7 +165,7 @@ class Piece(object):
             self.color = shape_colors[shape.index(shape)]
             self.rotation = 0
 
-def create_grid(locked_pos={}):
+def createGrid(locked_pos={}):
       grid = [[(0,0,0) for _ in range(10)] for _ in range(20)]
       
       for i in range(len(grid)):
@@ -167,7 +175,7 @@ def create_grid(locked_pos={}):
                   grid[i][j] = c
       return grid
       
-def convert_shape_format(shape):
+def convertShapeFormat(shape):
       position = []
       format = shape.shape[shape.rotation % len(shape.shape)]
       
@@ -175,44 +183,44 @@ def convert_shape_format(shape):
             positions[i] = (pos[0] - 2, pos[1] - 4)
       return positions
       
-def valid_space(shape, grid):
-      accepted_pos = [[(j, i) for j in range(10) if grid[i][j] == (0,0,0) for i in range(20)]
-      accepted_pos = [j for sub in accepted_pos for j in sub]
+def validSpace(shape, grid):
+      acceptedPos = [[(j, i) for j in range(10) if grid[i][j] == (0,0,0) for i in range(20)]
+      acceptedPos = [j for sub in accepted_pos for j in sub]
       
-      formatted = convert_shape_format(shape)
+      formatted = convertShapeFormat(shape)
       
       for pos in formatted:
-            if pos not in accepted_pos
+            if pos not in acceptedPos
                   if pos[1] > -1:
                         return False
       return True
       
-def check_lost(positions):
+def checkLost(positions):
       for pos in positions:
             x, y = pos
             if y < 1:
                   return True
       return False 
 
-def get_shape():
-      return Piece(5, 0, random.choice(shapes))
+def getShape():
+      return Piece(6, 0, random.choice(shapes))
 
-def draw_text_middle(surface, text, size, color):
+def drawTextMiddle(surface, text, size, color):
       font = pygame.font.SysFont("monaco", size, bold = True)
       label = font.render(text, 1, color)
       
-      surface.blit(label, (top_left_x + play_width /2 - (label.get_width()/2), top_left_y + play_height/2 - label.get_height()/2))
+      surface.blit(label, (topLeftX + playWidth /2 - (label.getWidth()/2), topLeftY + playHeight/2 - label.getHeight()/2))
 
-def draw_grid(surface, grid)
-      sx = top_left_x
-      sy = top_left_y
+def drawGrid(surface, grid)
+      screenX = topLeftX
+      screenY = topLeftY
       
       for i in range(len(grid)):
-            pygame.draw.line(surface, (128,128,128), (sx, sy + i*block_size), (sx+play_width, sy+ i*block_size))
+            pygame.draw.line(surface, (128,128,128), (screenX, screenY + i*block_size), (screenX+playWidth, screenY + i*blockSize))
             for j in range(len(grid[i])):
-            pygame.draw.line(surface, (128, 128, 128), (sx + j*block_size, sy),(sx + j*block_size, sy + play_height))
+            pygame.draw.line(surface, (128, 128, 128), (screenX + j*blockSize, screenY),(screenX + j*blockSize, screenY + playHeight))
 
-def clear_rows(grid, locked):
+def clearRows(grid, locked):
       inc = 0
       for i in range(len(grid)-1, -1, -1):
             row = grid[i]
@@ -232,23 +240,41 @@ def clear_rows(grid, locked):
                         locked[newKey] = locked.pop(key)
       return inc
       
-def draw_next_shape(shape, surface):
+def drawNextShape(shape, surface):
       font = pygame.font.SysFont('monaco', 30)
       label = font.render('Next Shape', 1, (255, 255, 255))
-      sx = top_left_x + play_width + 50
-      sy = top_left_y + play_height/2 - 100
+      screenX = topLeftX + playWidth + 50
+      sy = topLeftY + playHeight/2 - 100
       for i, line in enumerate(format):
             row = list(line)
             for j, column in enumerate(row):
                   if column == '0':
-                        pygame.draw.rect(surface, shape.color, (sx + j*block_size, sy + i*block_size, block_size, block_size), 0)
+                        pygame.draw.rect(surface, shape.color, (screenX + j*blockSize, screenY + i*blockSize, blockSize, blockSize), 0)
       surface.blit(label, (sx + 10, sy - 30))
       
-def draw_window(surface, grid, score=0):
+def drawWindow(surface, grid, score=0):
       surface.fill((0,0,0))
       pygame.font.init()
       font = pygame.font.SysFont('monaco', 60)
       label = font.render('Tetris', 1, (255,0,0))
-      surface.blit(label, (top_left_x + play_width / 2 - (label.get_width() / 2), 30))
+      surface.blit(label, (topLeftX + playWidth / 2 - (label.getWidth() / 2), 30))
+    
+    #displays current score
+      font = pygame.font.SysFont('monaco', 30)
+      label = font.render('Score: ' + str(score), 1, (255 ,255 , 255))
+                      
+      screenX = topLeftX + playWidth + 50
+      screenY = topLeftY + playHeight/2 - 100
+                      
+      surface.blit(label, (screenX + 20, screenY + 160))
+      for i in range(len(grid)):
+          for j in range(len(grid[i])):
+                pygame.draw.rect(surface, grid[i][j], (topLeftX, topLeftY, playWidth, playHeight), 6)
+      
+      pygame.draw.rect(surface, (255, 0, 0), (topLeftX, topLeftY, playWidth, playHeight), 6)
+                      
+      drawGrid(surface, grid)
 
 
+def main(win):
+   locked 

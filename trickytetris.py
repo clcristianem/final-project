@@ -176,7 +176,7 @@ EO = [['.....',
 
 
 #SHAPE INFO
-shapes = [SI, S, SL, U, T, Z, L, J, EO]
+shapes = [SI, S, SL, T, Z, L, J, EO]
 shape_colors = [(0, 128, 0), (128, 0, 0), (0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0), (0, 0, 255), (128, 0, 128)]
 
 # index 0 - 6 represent shape
